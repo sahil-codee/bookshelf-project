@@ -1,12 +1,13 @@
 import "./App.css";
+import Accounts from "./components/Accounts";
+import RegisterAccounts from "./components/RegisterAccounts";
 import SearchBooks from "./components/SearchBooks";
-import UserAccounts from "./components/UserAccounts";
 
 function App() {
   return (
     <div className="App">
       {/* <SearchBooks /> */}
-      <UserAccounts />
+      <RegisterAccounts />
     </div>
   );
 }

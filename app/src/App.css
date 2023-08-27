@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .App {
   text-align: center;
 }
@@ -88,7 +94,6 @@
   object-fit: cover;
 }
 
-
 .overlay {
   position: absolute;
   top: 0;
@@ -145,7 +150,108 @@
   background-color: #0056b3;
 }
 
+/* Add any global styles or reset here */
 
+/* Style for the entire form container */
+.sign-up-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  /* border: 1px solid #ccc; */
+  border-radius: 5px;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  font-family: Arial, sans-serif;
+}
+
+/* Style for form headings */
+h1,
+h3 {
+  text-align: center;
+}
+
+/* Style for form labels */
+label {
+  display: block;
+  margin-bottom: 5px;
+  text-align: left; /* Align labels to the left */
+}
+
+/* Style for input fields */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 14px;
+  border-radius: 30px;
+}
+
+/* Style for the "Create Account" button */
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  border-radius: 20px;
+  margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+/* Add any global styles or reset here */
+
+/* Style for the entire form container */
+
+
+/* Style for terms and conditions paragraph */
+.terms {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Style for login link paragraph */
+.login-link {
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+/* Style for login link */
+.login-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+
+  text-decoration: underline;
+}
+
+
+.register-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Style for the logo */
+.logo {
+  margin-bottom: 20px;
+}
+
+.logo h1 {
+  font-size: 36px;
+  color: #007bff;
+}
 /* Adjust image height for different screen sizes */
 @media (max-width: 576px) {
   .image {
