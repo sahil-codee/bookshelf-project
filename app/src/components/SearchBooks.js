@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import debounce from "lodash.debounce";
 import "../App.css";
 import bookshelf from "../Assets/Images/bookshelf.jpg";
+import { useReadingList } from "./ReadingListContext ";
 
 function SearchBooks() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,9 +24,46 @@ function SearchBooks() {
     setSearchTerm(e.target.value);
   };
 
+  const { addToReadingList } = useReadingList();
+
+  const handleAddToReadingList = async (book) => {
+    try {
+      // Create an object with the necessary data from the book
+      const bookData = {
+        bookTitle: book.volumeInfo.title,
+        bookAuthors: book.volumeInfo.authors || [],
+        bookImage: book.volumeInfo.imageLinks?.smallThumbnail || "",
+      };
+
+      addToReadingList({
+        bookTitle: book.volumeInfo.title,
+        bookAuthors: book.volumeInfo.authors || [],
+        bookImage: book.volumeInfo.imageLinks?.smallThumbnail || "",
+      });
+      // Send a POST request to your backend endpoint
+      const response = await fetch("http://localhost:3001/dashboard", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(bookData),
+      });
+
+      if (response.ok) {
+        // Handle success, e.g., show a success message
+        console.log("Book added to reading list");
+      } else {
+        // Handle error cases
+        console.error("Error adding book to reading list");
+      }
+    } catch (error) {
+      console.error("Error adding book to reading list:", error);
+    }
+  }; // Missing curly brace
+
   return (
     <div>
-      <h1>Google Books Search</h1>
       <div className="container">
         <img className="image" src={bookshelf} alt="SampleImage" />
         <div className="overlay">
@@ -56,7 +94,12 @@ function SearchBooks() {
                   ? book.volumeInfo.authors.join(", ")
                   : "Unknown Author"}
               </p>
-              {/* Add more details if needed */}
+              <button
+                onClick={() => handleAddToReadingList(book)}
+                className="add-to-reading-list-button"
+              >
+                Add to Reading List
+              </button>
             </div>
           ))}
         </div>

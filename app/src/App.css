@@ -153,7 +153,8 @@
 /* Add any global styles or reset here */
 
 /* Style for the entire form container */
-.sign-up-form {
+.sign-up-form,
+.login-form {
   max-width: 400px;
   margin: 0 auto;
   padding: 30px;
@@ -211,7 +212,6 @@ button[type="submit"]:hover {
 
 /* Style for the entire form container */
 
-
 /* Style for terms and conditions paragraph */
 .terms {
   font-size: 14px;
@@ -231,12 +231,11 @@ button[type="submit"]:hover {
 }
 
 .login-link a:hover {
-
   text-decoration: underline;
 }
 
-
-.register-container {
+.register-container,
+.login-container {
   max-width: 400px;
   margin: 0 auto;
   padding: 20px;
@@ -252,6 +251,86 @@ button[type="submit"]:hover {
   font-size: 36px;
   color: #007bff;
 }
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+  color: white;
+}
+
+.navbar-logo h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.navbar-links ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links li {
+  margin-right: 20px;
+}
+
+.navbar-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.navbar-links button {
+  background-color: #ff5555;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Navbar.css */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+  color: white;
+}
+
+.navbar-logo h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  margin-right: 20px;
+  font-size: 16px;
+}
+
+.logout-button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: white;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  color: rgb(182, 2, 2);
+}
+
 /* Adjust image height for different screen sizes */
 @media (max-width: 576px) {
   .image {

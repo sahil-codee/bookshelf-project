@@ -1,52 +1,40 @@
 import React, { useState } from "react";
+import "../App.css";
+import { useNavigate } from "react-router-dom";
 
 function RegisterAccounts() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [reenterPassword, setReenterPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [signupMessage, setSignupMessage] = useState("");
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
+
+    // Frontend validation
+    if (password !== reenterPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    } else if (password.length <= 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return;
+    }
+
+    // Create an object with the form data
+    const formData = {
+      email,
+      username,
+      password,
+      reenterPassword,
+    };
 
     try {
-      // Check if passwords match
-      if (password !== reenterPassword) {
-        alert("Passwords do not match.");
-        return;
-      }
-
-      // Check username availability
-      const usernameResponse = await fetch(
-        `/api/check-username?username=${username}`
-      );
-      const isUsernameAvailable = await usernameResponse.json();
-
-      if (!isUsernameAvailable) {
-        alert("Username is already taken. Please choose another username.");
-        return;
-      }
-
-      // Check if email address is associated with an account
-      const emailResponse = await fetch(`/api/check-email?email=${email}`);
-      const isEmailTaken = await emailResponse.json();
-
-      if (isEmailTaken) {
-        alert(
-          "An account with this email address already exists. Please sign in."
-        );
-        return;
-      }
-
-      const formData = {
-        email: email,
-        username: username,
-        password: password,
-        reenterPassword: reenterPassword,
-      };
-
-      // Send data to the backend using fetch
-      const response = await fetch("/api/register", {
+      // Send the POST request using fetch
+      const response = await fetch("http://localhost:3001/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,14 +42,37 @@ function RegisterAccounts() {
         body: JSON.stringify(formData),
       });
 
-      const responseData = await response.json();
+      if (response.ok) {
+        const responseData = await response.json();
+        if (responseData.message) {
+          setSignupMessage(responseData.message);
 
-      // Handle the response as needed
-      console.log("Registration successful:", responseData);
+          // Save the username to localStorage
+          localStorage.setItem("username", username);
+
+          // Redirect to the dashboard
+          navigate("/dashboard");
+        }
+      } else if (response.status === 409) {
+        const errorData = await response.json();
+        if (errorData.message) {
+          setSignupMessage(errorData.message);
+        }
+        console.error("User already exists:", errorData.message);
+      } else {
+        const errorData = await response.json();
+        if (errorData.error) {
+          setSignupMessage(errorData.error);
+        }
+        console.error("Registration failed:", response.statusText);
+        // Handle other error cases, show error message, etc.
+      }
     } catch (error) {
-      console.error("Registration failed:", error);
+      console.error("Error registering:", error);
+      // Handle network errors or other exceptions
     }
   };
+
   return (
     <div className="register-container">
       <div className="logo">
@@ -81,11 +92,15 @@ function RegisterAccounts() {
             onChange={(e) => setUsername(e.target.value)}
             required
             placeholder="First and Last name"
-            
           />{" "}
         </div>
 
         <div className="input-group">
+          {signupMessage && (
+            <p className="signup-message" style={{ color: "red" }}>
+              {signupMessage}
+            </p>
+          )}
           <label htmlFor="email">Email</label>
           <input
             type="email"
@@ -97,6 +112,11 @@ function RegisterAccounts() {
         </div>
 
         <div className="input-group">
+          {passwordError ? (
+            <p className="error-message">{passwordError}</p>
+          ) : (
+            ""
+          )}
           <label htmlFor="password">Password</label>
           <input
             type="password"
@@ -126,7 +146,7 @@ function RegisterAccounts() {
         <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>
       </p>
       <p className="login-link">
-        Already have an account? <a href="/">Sign in</a>
+        Already have an account? <a href="/login">Sign in</a>
       </p>
     </div>
   );
