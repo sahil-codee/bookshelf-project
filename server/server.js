@@ -28,6 +28,7 @@ mongoose
   .connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    dbName: "bookshelf", // Specify the database name within the cluster
   })
   .then(() => {
     console.log("Connected to MongoDB Atlas");
@@ -36,42 +37,60 @@ mongoose
     console.error("Error connecting to MongoDB Atlas:", error);
   });
 
+// const authenticateMiddleware = (req, res, next) => {
+//   const token = req.headers.authorization?.replace("Bearer ", "");
+//   if (!token) {
+//     return res.status(401).json({ message: "Authentication required" });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     return res.status(401).json({ message: "Invalid token" });
+//   }
+// };
+
+// Define a schema for the registration data
 const authenticateMiddleware = (req, res, next) => {
-  const token = req.cookies.token; // or req.headers.authorization.replace("Bearer ", "")
+  const token = req.headers.authorization?.replace("Bearer ", "");
+
   if (!token) {
     return res.status(401).json({ message: "Authentication required" });
   }
 
   try {
+    console.log("Token:", token); // Log the token
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded:", decoded); // Log the decoded payload
     req.user = decoded;
+
     next();
   } catch (error) {
+    console.error("Token verification error:", error);
     return res.status(401).json({ message: "Invalid token" });
   }
 };
 
-const userSchema = new mongoose.Schema({
-  username: String,
-  email: String,
-  password: String,
-  readingList: [
-    {
-      title: String,
-      authors: [String],
-      image: String,
-    },
-  ],
-});
-
-const User = mongoose.model("User", userSchema);
-
-// Define a schema for the registration data
-const registrationSchema = new mongoose.Schema({
-  email: String,
-  username: String,
-  password: String,
-});
+const registrationSchema = new mongoose.Schema(
+  {
+    email: String,
+    username: String,
+    password: String,
+    books: [
+      {
+        title: String,
+        author: String,
+        genre: String,
+        pagesRead: Number, // Track reading progress
+        completed: Boolean, // Track whether the book is completed
+        // ... other book-specific fields
+      },
+    ],
+  },
+);
 
 const Registration = mongoose.model("Registration", registrationSchema);
 
@@ -161,7 +180,7 @@ app.post("/signup", async (req, res) => {
         { expiresIn: "1h" }
       );
 
-      res.json({ message: "Registration successful", token }); // Send token in the response
+      res.json({ message: "Registration successful", token, username });
 
       // You can then redirect the user using JavaScript on the client side
       // after receiving the JSON response with the token.
@@ -181,34 +200,16 @@ app.post("/signup", async (req, res) => {
       .json({ error: "An error occurred while processing your request" });
   }
 });
+app.get("/verify-token", authenticateMiddleware, (req, res) => {
+  // If the middleware passes, the token is valid
+  res.json({ user: req.user });
+});
 
 // Endpoint to add a book to the user's reading list
-app.post("/dashboard", authenticateMiddleware, async (req, res) => {
-  const { bookTitle, bookAuthors, bookImage } = req.body;
-  const userId = req.user.id;
-  console.log("User ID:", userId); // Debugging line
+app.post("/dashboard", authenticateMiddleware, async (req, res) => {});
 
-  try {
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    user.readingList.push({
-      title: bookTitle,
-      authors: bookAuthors,
-      image: bookImage,
-    });
-    await user.save();
-
-    console.log("Updated Reading List:", user.readingList); // Debugging line
-    res.json({ message: "Book added to reading list" });
-  } catch (error) {
-    console.error("Error adding book to reading list:", error);
-    res.status(500).json({ error: "An error occurred while adding the book" });
-  }
-});
+// Endpoint to get added books for the user's dashboard
+app.get("/dashboard", authenticateMiddleware, async (req, res) => {});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

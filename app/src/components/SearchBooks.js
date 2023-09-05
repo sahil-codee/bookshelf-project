@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import debounce from "lodash.debounce";
 import "../App.css";
 import bookshelf from "../Assets/Images/bookshelf.jpg";
-import { useReadingList } from "./ReadingListContext ";
 
 function SearchBooks() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,44 +23,29 @@ function SearchBooks() {
     setSearchTerm(e.target.value);
   };
 
-  const { addToReadingList } = useReadingList();
-
-  const handleAddToReadingList = async (book) => {
+  const handleAddToDashboard = async (book) => {
+    console.log("clicked");
+    const token = localStorage.getItem("token");
+    console.log(token)
     try {
-      // Create an object with the necessary data from the book
-      const bookData = {
-        bookTitle: book.volumeInfo.title,
-        bookAuthors: book.volumeInfo.authors || [],
-        bookImage: book.volumeInfo.imageLinks?.smallThumbnail || "",
-      };
-
-      addToReadingList({
-        bookTitle: book.volumeInfo.title,
-        bookAuthors: book.volumeInfo.authors || [],
-        bookImage: book.volumeInfo.imageLinks?.smallThumbnail || "",
-      });
-      // Send a POST request to your backend endpoint
       const response = await fetch("http://localhost:3001/dashboard", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(bookData),
+        body: JSON.stringify({ book }),
       });
 
       if (response.ok) {
-        // Handle success, e.g., show a success message
-        console.log("Book added to reading list");
+        console.log("Book added to dashboard!");
       } else {
-        // Handle error cases
-        console.error("Error adding book to reading list");
+        console.error("Error adding book to dashboard");
       }
     } catch (error) {
-      console.error("Error adding book to reading list:", error);
+      console.error("Error adding book to dashboard:", error);
     }
-  }; // Missing curly brace
-
+  };
   return (
     <div>
       <div className="container">
@@ -87,18 +71,18 @@ function SearchBooks() {
         <div className="book-cards">
           {books.map((book) => (
             <div className="book-card" key={book.id}>
-              <img src={book.volumeInfo.imageLinks.smallThumbnail} alt="" />
+              <img
+                src={book.volumeInfo.imageLinks?.smallThumbnail || ""}
+                alt=""
+              />{" "}
               <h3 className="book-title">{book.volumeInfo.title}</h3>
               <p className="book-authors">
                 {book.volumeInfo.authors
                   ? book.volumeInfo.authors.join(", ")
                   : "Unknown Author"}
               </p>
-              <button
-                onClick={() => handleAddToReadingList(book)}
-                className="add-to-reading-list-button"
-              >
-                Add to Reading List
+              <button onClick={() => handleAddToDashboard(book)}>
+                Add to Dashboard
               </button>
             </div>
           ))}

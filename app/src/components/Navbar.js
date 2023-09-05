@@ -28,7 +28,7 @@ function Navbar({ username, onLogout }) {
         </ul>
       </div>
       <div className="navbar-links">
-        {username && <div className="username">Welcome {username}!</div>}
+        {username && <div className="username"> {username}!</div>}
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>

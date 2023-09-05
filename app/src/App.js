@@ -6,11 +6,12 @@ import Dashboard from "./components/Dashboard";
 import LoginAccounts from "./components/LoginAccounts";
 import RegisterAccounts from "./components/RegisterAccounts";
 import MyBookshelf from "./components/MyBookshelf";
-import { ReadingListProvider } from "./components/ReadingListContext ";
+// import { AuthProvider } from "./components/AuthContext";
+// import { useAuth } from "../src/components/AuthContext";
 
 function App() {
   const [username, setUsername] = useState("");
-
+  // const { updateAuthUser } = useAuth();
   const handleLogin = (newUsername) => {
     setUsername(newUsername);
   };
@@ -27,20 +28,7 @@ function App() {
     if (token) {
       try {
         const decodedToken = jwt_decode(token);
-        setUsername(decodedToken.username);
-      } catch (error) {
-        console.error("Error decoding token:", error);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    // Check if a token is stored in localStorage
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      try {
-        const decodedToken = jwt_decode(token);
+        console.log(decodedToken); // Add this line to check the decoded token
         setUsername(decodedToken.username);
       } catch (error) {
         console.error("Error decoding token:", error);
@@ -56,8 +44,8 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <ReadingListProvider>
+    // <AuthProvider>
+      <Router>
         <Navbar username={username} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<LoginAccounts onLogin={handleLogin} />} />
@@ -69,11 +57,11 @@ function App() {
             path="/login"
             element={<LoginAccounts onLogin={handleLogin} />}
           />
-          <Route path="/signup" element={<RegisterAccounts />} />
+          <Route path="/signup" element={<RegisterAccounts onLogin={handleLogin} />} />
           <Route path="/my-bookshelf" element={<MyBookshelf />} />
         </Routes>
-      </ReadingListProvider>
-    </Router>
+      </Router>
+    // </AuthProvider>
   );
 }
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../App.css";
 import { useNavigate } from "react-router-dom";
 
-function RegisterAccounts() {
+function RegisterAccounts({ onLogin }) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +19,7 @@ function RegisterAccounts() {
     if (password !== reenterPassword) {
       setPasswordError("Passwords do not match");
       return;
-    } else if (password.length <= 6) {
+    } else if (password.length < 8) {
       setPasswordError("Password must be at least 6 characters");
       return;
     }
@@ -47,9 +47,12 @@ function RegisterAccounts() {
         if (responseData.message) {
           setSignupMessage(responseData.message);
 
-          // Save the username to localStorage
-          localStorage.setItem("username", username);
+          onLogin(username);
 
+          const token = responseData.token;
+          if (token) {
+            localStorage.setItem("token", token);
+          }
           // Redirect to the dashboard
           navigate("/dashboard");
         }
@@ -124,6 +127,7 @@ function RegisterAccounts() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            minLength={8}
             placeholder="At least 6 characters"
           />{" "}
         </div>
@@ -135,6 +139,7 @@ function RegisterAccounts() {
             id="reenterPassword"
             value={reenterPassword}
             onChange={(e) => setReenterPassword(e.target.value)}
+            minLength={8}
             required
           />{" "}
         </div>

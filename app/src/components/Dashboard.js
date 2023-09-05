@@ -1,38 +1,28 @@
 import React, { useEffect, useState } from "react";
+import jwt_decode from "jwt-decode"; // You'll need to install this package
 
-import { useAuth } from "./AuthContext";
-import { useReadingList } from "./ReadingListContext ";
-
-function Dashboard({ username }) {
-  const { authUser } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
+function Dashboard() {
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
-    if (authUser) {
-      setIsLoading(false);
+    // Decode the token to get user information
+    const token = localStorage.getItem("token");
+    console.log(`token:`, token); // Add this line to check if the token is present
+    if (token) {
+      try {
+        const decodedToken = jwt_decode(token);
+        console.log(decodedToken);
+        setUsername(decodedToken.username);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
     }
-  }, [authUser]);
-  const { readingList } = useReadingList();
+  }, []);
 
-  
   return (
-    <div className="dashboard-container">
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : authUser ? (
-        <h1>Welcome, {authUser.username}!</h1>
-      ) : (
-        <p>Please log in to access the dashboard.</p>
-      )}
-      <ul>
-        {readingList.map((book, index) => (
-          <li key={index}>
-            <img src={book.bookImage} alt="" />
-            <h4>{book.bookTitle}</h4>
-            <p>{book.bookAuthors.join(", ")}</p>
-          </li>
-        ))}
-      </ul>
+    <div>
+      <h1>Welcome, {username}!</h1>
+      {/* Rest of your dashboard content */}
     </div>
   );
 }

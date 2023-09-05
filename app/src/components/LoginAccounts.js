@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+import Alert from "@mui/material/Alert";
 
 function LoginAccounts({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -16,7 +17,6 @@ function LoginAccounts({ onLogin }) {
       password,
     };
 
-    
     try {
       const response = await fetch("http://localhost:3001/login", {
         method: "POST",
@@ -29,10 +29,12 @@ function LoginAccounts({ onLogin }) {
       // Inside the handleSubmit function after successful login
       if (response.ok) {
         const userData = await response.json();
-        onLogin(userData.username); // Update the state with the received username
-
+        console.log("Received userData:", userData); // Add this line to check the received data
         // Save the token in localStorage
         localStorage.setItem("token", userData.token);
+
+        // Call the onLogin function to update the username state in App.js
+        onLogin(userData.username);
 
         // Redirect to the dashboard
         navigate("/dashboard");
@@ -65,11 +67,7 @@ function LoginAccounts({ onLogin }) {
 
       <form action="post" onSubmit={handleSubmit} className="login-form">
         <div className="input-group">
-          {loginMessage && (
-            <p className="login-message" style={{ color: "red" }}>
-              {loginMessage}
-            </p>
-          )}
+          {loginMessage && <Alert severity="error" style={{marginBottom: '20px'}}>{loginMessage}</Alert>}
           <label htmlFor="email">Email</label>
           <input
             type="email"
