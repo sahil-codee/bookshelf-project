@@ -37,22 +37,6 @@ mongoose
     console.error("Error connecting to MongoDB Atlas:", error);
   });
 
-// const authenticateMiddleware = (req, res, next) => {
-//   const token = req.headers.authorization?.replace("Bearer ", "");
-//   if (!token) {
-//     return res.status(401).json({ message: "Authentication required" });
-//   }
-
-//   try {
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     req.user = decoded;
-//     next();
-//   } catch (error) {
-//     return res.status(401).json({ message: "Invalid token" });
-//   }
-// };
-
-// Define a schema for the registration data
 const authenticateMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.replace("Bearer ", "");
 
@@ -67,6 +51,10 @@ const authenticateMiddleware = (req, res, next) => {
     console.log("Decoded:", decoded); // Log the decoded payload
     req.user = decoded;
 
+    req.user = {
+      _id: decoded.id, // Set _id based on 'id' from the payload
+      // other user properties...
+    };
     next();
   } catch (error) {
     console.error("Token verification error:", error);
@@ -74,23 +62,22 @@ const authenticateMiddleware = (req, res, next) => {
   }
 };
 
-const registrationSchema = new mongoose.Schema(
-  {
-    email: String,
-    username: String,
-    password: String,
-    books: [
-      {
-        title: String,
-        author: String,
-        genre: String,
-        pagesRead: Number, // Track reading progress
-        completed: Boolean, // Track whether the book is completed
-        // ... other book-specific fields
-      },
-    ],
-  },
-);
+const registrationSchema = new mongoose.Schema({
+  email: String,
+  username: String,
+  password: String,
+  books: [
+    {
+      image: String,
+      title: String,
+      author: String,
+      genre: String,
+      pagesRead: Number, // Track reading progress
+      completed: Boolean, // Track whether the book is completed
+      // ... other book-specific fields
+    },
+  ],
+});
 
 const Registration = mongoose.model("Registration", registrationSchema);
 
@@ -118,7 +105,7 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign(
       { id: user._id, email: user.email, username: user.username }, // Include username in the token payload
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
     // Send the token as an HTTP-only cookie
@@ -177,7 +164,7 @@ app.post("/signup", async (req, res) => {
       const token = jwt.sign(
         { id: savedRegistration._id, email, username }, // Include user info in the token payload
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "7d" }
       );
 
       res.json({ message: "Registration successful", token, username });
@@ -206,10 +193,70 @@ app.get("/verify-token", authenticateMiddleware, (req, res) => {
 });
 
 // Endpoint to add a book to the user's reading list
-app.post("/dashboard", authenticateMiddleware, async (req, res) => {});
+// Endpoint to add a book to the user's dashboard
+app.post("/dashboard", authenticateMiddleware, async (req, res) => {
+  const book = req.body.book; // Extract the entire book object
+  const { user } = req;
+  // console.log(req.body);
+  console.log("User ID:", user._id); // Add this line for debugging
+  try {
+    if (
+      !book ||
+      !book.volumeInfo ||
+      !book.volumeInfo.title ||
+      !book.volumeInfo.authors ||
+      !book.volumeInfo.imageLinks ||
+      !book.volumeInfo.imageLinks.thumbnail
+    ) {
+      return res.status(400).json({ message: "Invalid book data" });
+    }
+
+    // Create a new book object with the specific properties
+    const { title, authors, imageLinks } = book.volumeInfo;
+    const bookToAdd = {
+      title,
+      author: authors.join(", "), // Join authors array into a single string
+      image: imageLinks.thumbnail,
+    };
+
+    // Find the user by their ID and update their books array
+    const updatedUser = await Registration.findByIdAndUpdate(
+      user._id, // Assuming user._id is the user's ID
+      { $push: { books: bookToAdd } }, // Add the book to the user's books array
+      { new: true } // Return the updated user object
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(201).json({ message: "Book added to dashboard successfully" });
+  } catch (error) {
+    console.error("Error adding book to dashboard:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 // Endpoint to get added books for the user's dashboard
-app.get("/dashboard", authenticateMiddleware, async (req, res) => {});
+app.get("/dashboard", authenticateMiddleware, async (req, res) => {
+  const { user } = req;
+
+  try {
+    // Find the user by their ID and retrieve their books
+    const userData = await Registration.findById(user._id);
+
+    if (!userData) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Extract the user's books and send them in the response
+    const userBooks = userData.books || [];
+    res.status(200).json({ books: userBooks });
+  } catch (error) {
+    console.error("Error fetching added books for dashboard:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

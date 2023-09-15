@@ -15,7 +15,7 @@ function Navbar({ username, onLogout }) {
   return (
     <div className="navbar">
       <div className="navbar-logo">
-        <h1>My App</h1>
+        <h1>Bookshelf</h1>
       </div>
       <div className="navbar-links">
         <ul>

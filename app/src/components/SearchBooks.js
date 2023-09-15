@@ -24,9 +24,9 @@ function SearchBooks() {
   };
 
   const handleAddToDashboard = async (book) => {
-    console.log("clicked");
+    console.log("Clicked to Add Book:", book); // Added this line to log the book
     const token = localStorage.getItem("token");
-    console.log(token)
+    console.log(token);
     try {
       const response = await fetch("http://localhost:3001/dashboard", {
         method: "POST",
@@ -81,6 +81,11 @@ function SearchBooks() {
                   ? book.volumeInfo.authors.join(", ")
                   : "Unknown Author"}
               </p>
+              {book.volumeInfo.averageRating && (
+                <p className="book-rating">
+                  Rating: {book.volumeInfo.averageRating}/5
+                </p>
+              )}
               <button onClick={() => handleAddToDashboard(book)}>
                 Add to Dashboard
               </button>

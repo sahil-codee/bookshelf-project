@@ -6,6 +6,7 @@ import Dashboard from "./components/Dashboard";
 import LoginAccounts from "./components/LoginAccounts";
 import RegisterAccounts from "./components/RegisterAccounts";
 import MyBookshelf from "./components/MyBookshelf";
+import Copyright from "./components/Copyright";
 // import { AuthProvider } from "./components/AuthContext";
 // import { useAuth } from "../src/components/AuthContext";
 
@@ -45,22 +46,49 @@ function App() {
 
   return (
     // <AuthProvider>
-      <Router>
-        <Navbar username={username} onLogout={handleLogout} />
-        <Routes>
-          <Route path="/" element={<LoginAccounts onLogin={handleLogin} />} />
-          <Route
-            path="/dashboard"
-            element={<Dashboard username={username} />}
-          />
-          <Route
-            path="/login"
-            element={<LoginAccounts onLogin={handleLogin} />}
-          />
-          <Route path="/signup" element={<RegisterAccounts onLogin={handleLogin} />} />
-          <Route path="/my-bookshelf" element={<MyBookshelf />} />
-        </Routes>
-      </Router>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginAccounts onLogin={handleLogin} />} />
+        <Route
+          path="/dashboard"
+          element={
+            <>
+              {" "}
+              <Navbar username={username} onLogout={handleLogout} />
+              <Dashboard username={username} />{" "}
+            </>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <>
+              {" "}
+              <LoginAccounts onLogin={handleLogin} /> <Copyright />
+            </>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <>
+              {" "}
+              <RegisterAccounts onLogin={handleLogin} /> <Copyright />{" "}
+            </>
+          }
+        />
+        <Route
+          path="/my-bookshelf"
+          element={
+            <>
+              {" "}
+              <Navbar username={username} onLogout={handleLogout} />
+              <MyBookshelf />{" "}
+            </>
+          }
+        />
+      </Routes>
+    </Router>
     // </AuthProvider>
   );
 }

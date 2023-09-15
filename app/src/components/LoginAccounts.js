@@ -67,7 +67,11 @@ function LoginAccounts({ onLogin }) {
 
       <form action="post" onSubmit={handleSubmit} className="login-form">
         <div className="input-group">
-          {loginMessage && <Alert severity="error" style={{marginBottom: '20px'}}>{loginMessage}</Alert>}
+          {loginMessage && (
+            <Alert severity="error" style={{ marginBottom: "20px" }}>
+              {loginMessage}
+            </Alert>
+          )}
           <label htmlFor="email">Email</label>
           <input
             type="email"
@@ -91,6 +95,10 @@ function LoginAccounts({ onLogin }) {
 
         <button type="submit">Login</button>
       </form>
+      <p className="terms">
+        By signing in, you agree to the Bookshelf <br />{" "}
+        <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>
+      </p>
       <p className="login-link">
         Don't have an account? <a href="/signup">Sign up</a>
       </p>
