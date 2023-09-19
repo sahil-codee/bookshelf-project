@@ -9,7 +9,6 @@ function Dashboard() {
     setOpenBookId(bookId);
   };
 
-  
   const closePopup = () => {
     setOpenBookId(null);
   };
