@@ -13,10 +13,20 @@ router.post("/login", UserController.login);
 router.post("/signup", UserController.signup);
 router.get("/verify-token", authenticateMiddleware, UserController.verifyToken);
 router.post(
+  "/dashboard/update-rating",
+  authenticateMiddleware,
+  UserController.updateBookRating
+);
+router.post(
   "/dashboard",
   authenticateMiddleware,
   UserController.addToDashboard
 );
 router.get("/dashboard", authenticateMiddleware, UserController.getDashboard);
+router.post(
+  "/dashboard/remove-book",
+  authenticateMiddleware,
+  UserController.removeBook
+);
 
 export default router;

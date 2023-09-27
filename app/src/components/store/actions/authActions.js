@@ -20,10 +20,11 @@ export const setUsername = (username) => {
     };
   };
   
-  export const loginSuccess = (userData) => {
+  // Update the loginSuccess action creator to accept 'username'
+  export const loginSuccess = (username) => {
     return {
       type: 'LOGIN_SUCCESS',
-      payload: userData,
+      payload: username, // Change 'userData' to 'username'
     };
   };
   
@@ -34,3 +35,11 @@ export const setUsername = (username) => {
     };
   };
   
+
+  export const LOGOUT = 'LOGOUT';
+
+export const logout = () => {
+  return {
+    type: LOGOUT,
+  };
+};

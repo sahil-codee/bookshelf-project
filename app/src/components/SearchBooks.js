@@ -13,6 +13,7 @@ function SearchBooks() {
         `https://www.googleapis.com/books/v1/volumes?q=${searchTerm}&key=AIzaSyCzzxQT9OqwPgiwzWQOLZWHOfJAHXY1UHA`
       );
       const data = await response.json();
+      console.log("Data from Google Books API:", data); // Log the data received from the API
       setBooks(data.items || []);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -34,9 +35,9 @@ function SearchBooks() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ book }),
+        body: JSON.stringify({ book }), // Is the book data being correctly sent?
       });
-
+  
       if (response.ok) {
         console.log("Book added to dashboard!");
       } else {
@@ -46,6 +47,7 @@ function SearchBooks() {
       console.error("Error adding book to dashboard:", error);
     }
   };
+  
   return (
     <div>
       <div className="container">
@@ -81,6 +83,16 @@ function SearchBooks() {
                   ? book.volumeInfo.authors.join(", ")
                   : "Unknown Author"}
               </p>
+              {book.volumeInfo.averageRating && (
+                <p className="book-rating">
+                  Rating: {book.volumeInfo.averageRating}/5
+                </p>
+              )}
+              {book.volumeInfo.ratingsCount && (
+                <p className="book-reviews">
+                  Reviews: {book.volumeInfo.ratingsCount}
+                </p>
+              )}
               {book.volumeInfo.averageRating && (
                 <p className="book-rating">
                   Rating: {book.volumeInfo.averageRating}/5

@@ -102,7 +102,7 @@ export const verifyToken = (req, res) => {
 export const addToDashboard = async (req, res) => {
   const book = req.body.book;
   const { user } = req;
-
+  console.log("Received book data:", book);
   try {
     if (
       !book ||
@@ -115,11 +115,14 @@ export const addToDashboard = async (req, res) => {
       return res.status(400).json({ message: "Invalid book data" });
     }
 
-    const { title, authors, imageLinks } = book.volumeInfo;
+    const { title, authors, imageLinks, averageRating, ratingsCount } =
+      book.volumeInfo;
     const bookToAdd = {
       title,
       author: authors.join(", "),
       image: imageLinks.thumbnail,
+      averageRating, // Include the average rating
+      ratingsCount, // Include the ratings count
     };
 
     const updatedUser = await Registration.findByIdAndUpdate(
@@ -139,6 +142,30 @@ export const addToDashboard = async (req, res) => {
   }
 };
 
+// Controller function to update a book's rating
+// Controller function to update a book's rating
+export const updateBookRating = async (req, res) => {
+  const { book } = req.body;
+
+  try {
+    // Find the book by ID and update its rating
+    const updatedBook = await Registration.findOneAndUpdate(
+      { "books._id": book._id }, // Find the book by its _id
+      { $set: { "books.$.averageRating": book.averageRating } }, // Update the averageRating field
+      { new: true } // Return the updated book
+    );
+
+    if (!updatedBook) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    return res.json({ success: true, updatedBook });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const getDashboard = async (req, res) => {
   const { user } = req;
 
@@ -153,6 +180,28 @@ export const getDashboard = async (req, res) => {
     res.status(200).json({ books: userBooks });
   } catch (error) {
     console.error("Error fetching added books for dashboard:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const removeBook = async (req, res) => {
+  const { bookId } = req.body;
+  const { user } = req;
+
+  try {
+    const updatedUser = await Registration.findByIdAndUpdate(
+      user._id,
+      { $pull: { books: { _id: bookId } } }, // Remove the book with the specified _id
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Book removed successfully" });
+  } catch (error) {
+    console.error("Error removing book:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

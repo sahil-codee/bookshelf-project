@@ -1,8 +1,21 @@
-// src/store/index.js
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import rootReducer from './reducers'; // Import the combined reducers
+// src/redux/store.js
 
-const store = createStore(rootReducer, applyMiddleware(thunk));
+import { createStore, applyMiddleware } from "redux";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
-export default store;
+import rootReducer from "./reducers";
+
+// Define the persistConfig
+const persistConfig = {
+  key: "root",
+  storage,
+};
+
+// Create a persisted reducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+const store = createStore(persistedReducer, applyMiddleware(/* any middleware you need */));
+const persistor = persistStore(store);
+
+export { store, persistor };

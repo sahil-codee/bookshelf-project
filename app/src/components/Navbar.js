@@ -1,14 +1,17 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../App.css";
+import { useSelector, useDispatch } from "react-redux"; // Import useDispatch
+import { logout } from "./store/actions/authActions";
 
-function Navbar({ username, onLogout }) {
+function Navbar() {
+  const username = useSelector((state) => state.auth.username);
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // Add useDispatch to dispatch actions
 
   const handleLogout = () => {
-    onLogout();
-    localStorage.removeItem("username");
-    localStorage.removeItem("token");
+    // Dispatch the logout action to clear Redux state
+    dispatch(logout());
     navigate("/login"); // Redirect to the login page
   };
 

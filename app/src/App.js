@@ -1,61 +1,51 @@
-import React, { useEffect, useState } from "react";
-import jwt_decode from "jwt-decode"; // Import the jwt_decode function
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Dashboard from "./components/Dashboard";
-import LoginAccounts from "./components/LoginAccounts";
-import RegisterAccounts from "./components/RegisterAccounts";
+import Dashboard from "./components/dashboard/Dashboard";
+import LoginAccounts from './components/login/LoginAccounts'
+import RegisterAccounts from "./components/signup/RegisterAccounts";
 import MyBookshelf from "./components/MyBookshelf";
-import Copyright from "./components/Copyright";
-// import { AuthProvider } from "./components/AuthContext";
-// import { useAuth } from "../src/components/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { setUsername, logout } from "./components/store/actions/authActions"; // Import your Redux actions
 
 function App() {
-  const [username, setUsername] = useState("");
-  // const { updateAuthUser } = useAuth();
+  const dispatch = useDispatch();
+  const username = useSelector((state) => state.auth.username);
+
   const handleLogin = (newUsername) => {
-    setUsername(newUsername);
+    dispatch(setUsername(newUsername));
+    // Store the username in localStorage
+    localStorage.setItem("username", newUsername);
   };
 
   const handleLogout = () => {
-    setUsername("");
-    localStorage.removeItem("token"); // Remove the token from localStorage on logout
+    dispatch(logout());
+    // Remove the username from localStorage on logout
+    localStorage.removeItem("username");
+    localStorage.removeItem("token");
   };
 
+  // Retrieve the username from localStorage when the application initializes
   useEffect(() => {
-    // Check if a token is stored in localStorage
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      try {
-        const decodedToken = jwt_decode(token);
-        console.log(decodedToken); // Add this line to check the decoded token
-        setUsername(decodedToken.username);
-      } catch (error) {
-        console.error("Error decoding token:", error);
-      }
-    }
-
-    // Check if a username is stored in localStorage
     const storedUsername = localStorage.getItem("username");
-
     if (storedUsername) {
-      setUsername(storedUsername);
+      dispatch(setUsername(storedUsername));
     }
-  }, []);
+  }, [dispatch]);
 
   return (
-    // <AuthProvider>
     <Router>
       <Routes>
-        <Route path="/" element={<LoginAccounts onLogin={handleLogin} />} />
+        <Route
+          path="/"
+          element={<LoginAccounts onLogin={handleLogin} />}
+        />
         <Route
           path="/dashboard"
           element={
             <>
-              {" "}
               <Navbar username={username} onLogout={handleLogout} />
-              <Dashboard username={username} />{" "}
+              <Dashboard username={username} />
             </>
           }
         />
@@ -63,8 +53,7 @@ function App() {
           path="/login"
           element={
             <>
-              {" "}
-              <LoginAccounts onLogin={handleLogin} /> <Copyright />
+              <LoginAccounts onLogin={handleLogin} />
             </>
           }
         />
@@ -72,8 +61,7 @@ function App() {
           path="/signup"
           element={
             <>
-              {" "}
-              <RegisterAccounts onLogin={handleLogin} /> <Copyright />{" "}
+              <RegisterAccounts onLogin={handleLogin} />
             </>
           }
         />
@@ -81,15 +69,13 @@ function App() {
           path="/my-bookshelf"
           element={
             <>
-              {" "}
               <Navbar username={username} onLogout={handleLogout} />
-              <MyBookshelf />{" "}
+              <MyBookshelf />
             </>
           }
         />
       </Routes>
     </Router>
-    // </AuthProvider>
   );
 }
 

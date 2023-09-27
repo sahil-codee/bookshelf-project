@@ -1,20 +1,30 @@
-import React, { useState } from "react";
+// src/LoginAccounts.js
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  loginSuccess,
+  loginFailure,
+  setPassword,
+  setEmail,
+} from "../store/actions/authActions"; // Import your actions
 import { useNavigate } from "react-router-dom";
-import "../App.css";
+import "../../App.css";
 import Alert from "@mui/material/Alert";
 
-function LoginAccounts({ onLogin }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginMessage, setLoginMessage] = useState("");
+function LoginAccounts() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const email = useSelector((state) => state.auth.email); // Using Redux for email
+  const password = useSelector((state) => state.auth.password);
+  const loginMessage = useSelector((state) => state.auth.error);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = {
-      email,
-      password,
+      email, // Use the email from Redux
+      password, // Use the password from Redux
     };
 
     try {
@@ -26,35 +36,39 @@ function LoginAccounts({ onLogin }) {
         body: JSON.stringify(formData),
       });
 
-      // Inside the handleSubmit function after successful login
       if (response.ok) {
         const userData = await response.json();
-        console.log("Received userData:", userData); // Add this line to check the received data
-        // Save the token in localStorage
+        console.log("User data received after login:", userData); // Add this log
+        dispatch(loginSuccess(userData.username));
+
         localStorage.setItem("token", userData.token);
-
-        // Call the onLogin function to update the username state in App.js
-        onLogin(userData.username);
-
-        // Redirect to the dashboard
         navigate("/dashboard");
       } else if (response.status === 401) {
         const errorData = await response.json();
         if (errorData.message) {
-          setLoginMessage(errorData.message);
+          dispatch(loginFailure(errorData.message));
         }
-        console.error("Authentication failed:", errorData.message);
       } else {
         const errorData = await response.json();
         if (errorData.error) {
-          setLoginMessage(errorData.error);
+          dispatch(loginFailure(errorData.error));
         }
-        console.error("Login failed:", response.statusText);
       }
     } catch (error) {
       console.error("Error logging in:", error);
     }
   };
+
+  const handlePasswordChange = (e) => {
+    dispatch(setPassword(e.target.value));
+  };
+
+  const handleEmailChange = (e) => {
+    dispatch(setEmail(e.target.value)); // Update email using Redux action
+  };
+
+
+  
 
   return (
     <div className="login-container">
@@ -76,8 +90,8 @@ function LoginAccounts({ onLogin }) {
           <input
             type="email"
             id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={email} // Use the email from Redux
+            onChange={handleEmailChange} // Use Redux action here
             required
           />
         </div>
@@ -87,8 +101,8 @@ function LoginAccounts({ onLogin }) {
           <input
             type="password"
             id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={password} // Use the password from Redux
+            onChange={handlePasswordChange} // Use Redux action here
             required
           />
         </div>
