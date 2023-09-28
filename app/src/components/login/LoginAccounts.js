@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import "../../App.css";
 import Alert from "@mui/material/Alert";
+import Copyright from "../footer/Copyright";
 
 function LoginAccounts() {
   const dispatch = useDispatch();
@@ -67,9 +68,6 @@ function LoginAccounts() {
     dispatch(setEmail(e.target.value)); // Update email using Redux action
   };
 
-
-  
-
   return (
     <div className="login-container">
       <div className="logo">
@@ -116,6 +114,9 @@ function LoginAccounts() {
       <p className="login-link">
         Don't have an account? <a href="/signup">Sign up</a>
       </p>
+      <div>
+        <Copyright />
+      </div>
     </div>
   );
 }

@@ -28,5 +28,10 @@ router.post(
   authenticateMiddleware,
   UserController.removeBook
 );
+router.post(
+  "/dashboard/update-progress",
+  authenticateMiddleware,
+  UserController.updateBookProgress
+);
 
 export default router;

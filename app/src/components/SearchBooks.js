@@ -25,9 +25,20 @@ function SearchBooks() {
   };
 
   const handleAddToDashboard = async (book) => {
-    console.log("Clicked to Add Book:", book); // Added this line to log the book
     const token = localStorage.getItem("token");
-    console.log(token);
+  
+    // Log pageCount using optional chaining
+    console.log("Page Count:", book.volumeInfo?.pageCount);
+  
+    // Check if pageCount is available before using it
+    if (book.volumeInfo?.pageCount) {
+      // It's safe to use pageCount here
+      console.log("Page Count is available:", book.volumeInfo.pageCount);
+    } else {
+      // Handle the case where pageCount is not available
+      console.log("Page Count is not available for this book.");
+    }
+  
     try {
       const response = await fetch("http://localhost:3001/dashboard", {
         method: "POST",
@@ -35,7 +46,7 @@ function SearchBooks() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ book }), // Is the book data being correctly sent?
+        body: JSON.stringify({ book }), // Send the entire book data to the backend
       });
   
       if (response.ok) {
@@ -48,6 +59,8 @@ function SearchBooks() {
     }
   };
   
+  
+
   return (
     <div>
       <div className="container">
@@ -88,14 +101,12 @@ function SearchBooks() {
                   Rating: {book.volumeInfo.averageRating}/5
                 </p>
               )}
+              {book.volumeInfo.pageCount && (
+                <p>Pages: {book.volumeInfo.pageCount}</p>
+              )}
               {book.volumeInfo.ratingsCount && (
                 <p className="book-reviews">
                   Reviews: {book.volumeInfo.ratingsCount}
-                </p>
-              )}
-              {book.volumeInfo.averageRating && (
-                <p className="book-rating">
-                  Rating: {book.volumeInfo.averageRating}/5
                 </p>
               )}
               <button onClick={() => handleAddToDashboard(book)}>

@@ -103,6 +103,8 @@ export const addToDashboard = async (req, res) => {
   const book = req.body.book;
   const { user } = req;
   console.log("Received book data:", book);
+  console.log("Page Count:", book.volumeInfo?.pageCount);
+  
   try {
     if (
       !book ||
@@ -110,19 +112,29 @@ export const addToDashboard = async (req, res) => {
       !book.volumeInfo.title ||
       !book.volumeInfo.authors ||
       !book.volumeInfo.imageLinks ||
-      !book.volumeInfo.imageLinks.thumbnail
+      !book.volumeInfo.imageLinks.thumbnail ||
+      !book.volumeInfo?.pageCount // Using optional chaining to access pageCount
     ) {
       return res.status(400).json({ message: "Invalid book data" });
     }
 
-    const { title, authors, imageLinks, averageRating, ratingsCount } =
-      book.volumeInfo;
+    const {
+      title,
+      authors,
+      imageLinks,
+      averageRating,
+      ratingsCount,
+      pageCount,
+    } = book.volumeInfo;
+
+    // Create a book object with the correct pageCount value
     const bookToAdd = {
       title,
       author: authors.join(", "),
       image: imageLinks.thumbnail,
-      averageRating, // Include the average rating
-      ratingsCount, // Include the ratings count
+      averageRating,
+      ratingsCount,
+      pageCount, // Include the pageCount
     };
 
     const updatedUser = await Registration.findByIdAndUpdate(
@@ -202,6 +214,36 @@ export const removeBook = async (req, res) => {
     res.json({ message: "Book removed successfully" });
   } catch (error) {
     console.error("Error removing book:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateBookProgress = async (req, res) => {
+  const book = req.body.book;
+  const { user } = req;
+
+  try {
+    // Find the book in the user's books array and update the progress
+    const updatedUser = await Registration.findOneAndUpdate(
+      { _id: user._id, "books._id": book._id },
+      {
+        $set: {
+          "books.$.pagesRead": book.pagesRead,
+          "books.$.lastProgressUpdate": book.lastProgressUpdate,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ message: "Book not found in user's library" });
+    }
+
+    res.status(200).json({ message: "Book progress updated successfully" });
+  } catch (error) {
+    console.error("Error updating book progress:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
