@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import "../../App.css";
 import Alert from "@mui/material/Alert";
 import Copyright from "../footer/Copyright";
+import { BASE_URL } from "../services/helper";
 
 function LoginAccounts() {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ function LoginAccounts() {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/login", {
+      const response = await fetch(`${BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

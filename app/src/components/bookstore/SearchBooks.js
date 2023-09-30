@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import debounce from "lodash.debounce";
 import './bookshelf.css'
 import bookshelf from "../../Assets/Images/bookshelf.jpg";
+import { BASE_URL } from "../services/helper";
+
 
 function SearchBooks() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,7 +42,7 @@ function SearchBooks() {
     }
   
     try {
-      const response = await fetch("http://localhost:3001/dashboard", {
+      const response = await fetch(`${BASE_URL}/dashboard`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

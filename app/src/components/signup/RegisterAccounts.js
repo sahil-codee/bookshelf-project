@@ -10,6 +10,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import "../../App.css";
 import Copyright from "../footer/Copyright";
+import { BASE_URL } from "../services/helper";
+
 
 function RegisterAccounts({ onLogin }) {
   const dispatch = useDispatch();
@@ -20,6 +22,7 @@ function RegisterAccounts({ onLogin }) {
   const registrationPassword = useSelector((state) => state.auth.registrationPassword);
   const reenterPassword = useSelector((state) => state.auth.reenterPassword);
   const registrationError = useSelector((state) => state.auth.registrationError);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,7 +43,7 @@ function RegisterAccounts({ onLogin }) {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/signup", {
+      const response = await fetch(`${BASE_URL}/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

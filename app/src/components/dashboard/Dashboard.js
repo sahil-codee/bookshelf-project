@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Rating from "react-rating-stars-component";
 import "./dashboard.css";
+import { BASE_URL } from "../services/helper";
 
 function Dashboard() {
   const [addedBooks, setAddedBooks] = useState([]);
@@ -58,7 +59,7 @@ function Dashboard() {
 
     try {
       const response = await fetch(
-        "http://localhost:3001/dashboard/update-rating",
+        `${BASE_URL}/dashboard/update-rating`,
         {
           method: "POST",
           headers: {
@@ -91,7 +92,7 @@ function Dashboard() {
 
     try {
       const response = await fetch(
-        "http://localhost:3001/dashboard/remove-book",
+        `${BASE_URL}/dashboard/remove-book`,
         {
           method: "POST",
           headers: {
@@ -141,7 +142,7 @@ function Dashboard() {
   
     try {
       const response = await fetch(
-        "http://localhost:3001/dashboard/update-progress",
+        `${BASE_URL}/dashboard/update-progress`,
         {
           method: "POST",
           headers: {
