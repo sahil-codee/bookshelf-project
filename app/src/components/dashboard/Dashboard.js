@@ -10,33 +10,33 @@ function Dashboard() {
   useEffect(() => {
     // Fetch user's dashboard data
     const token = localStorage.getItem("token");
-  
+
     if (token) {
       const fetchData = async () => {
         try {
-          const response = await fetch("http://localhost:3001/dashboard", {
+          const response = await fetch(`${BASE_URL}/dashboard`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-  
+
           if (response.status === 401) {
             // Token has expired or is invalid, redirect to the login page
             window.location.href = "/login"; // Replace with the actual login page URL
             return; // Stop further processing
           }
-  
+
           if (response.ok) {
             const data = await response.json();
             console.log(data);
-  
+
             // Reset the pagesRead value to an empty string
             const updatedBooks = data.books.map((book) => ({
               ...book,
               pagesRead: "",
             }));
-  
+
             setAddedBooks(updatedBooks);
           } else {
             console.error("Error fetching added books for dashboard");
@@ -45,11 +45,11 @@ function Dashboard() {
           console.error("Error fetching added books for dashboard:", error);
         }
       };
-  
+
       fetchData(); // Call the function
     }
   }, []);
-  
+
   const handleRatingChange = async (book, rating) => {
     const token = localStorage.getItem("token");
     const updatedBook = {
@@ -58,17 +58,14 @@ function Dashboard() {
     };
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/dashboard/update-rating`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ book: updatedBook }),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/dashboard/update-rating`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ book: updatedBook }),
+      });
 
       if (response.ok) {
         // Update the book's rating in the state
@@ -91,17 +88,14 @@ function Dashboard() {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/dashboard/remove-book`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ bookId: book._id }),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/dashboard/remove-book`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ bookId: book._id }),
+      });
 
       if (response.ok) {
         // Remove the book from the state
@@ -118,41 +112,38 @@ function Dashboard() {
 
   const handleProgressUpdate = async (book, pagesRead) => {
     const token = localStorage.getItem("token");
-  
+
     if (!pagesRead || parseInt(pagesRead) === 0) {
       setErrorMessage("Please enter a valid value for pages read.");
-  
+
       // Clear the error message after 5 seconds
       setTimeout(() => {
         setErrorMessage("");
       }, 5000);
-  
+
       return;
     }
-  
+
     setErrorMessage("");
-  
+
     const updatedBook = {
       _id: book._id,
       pagesRead: pagesRead,
       lastProgressUpdate: new Date(),
     };
-  
+
     updatedBook.progress = pagesRead / book.pageCount;
-  
+
     try {
-      const response = await fetch(
-        `${BASE_URL}/dashboard/update-progress`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ book: updatedBook }),
-        }
-      );
-  
+      const response = await fetch(`${BASE_URL}/dashboard/update-progress`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ book: updatedBook }),
+      });
+
       if (response.ok) {
         setAddedBooks((prevBooks) =>
           prevBooks.map((prevBook) =>
@@ -168,7 +159,7 @@ function Dashboard() {
       console.error("Error updating book progress:", error);
     }
   };
-  
+
   const handlePagesReadChange = (book, pagesRead) => {
     // Update the pagesRead value in the book object in the state
     setAddedBooks((prevBooks) =>
