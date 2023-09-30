@@ -156,7 +156,7 @@ function RegisterAccounts({ onLogin }) {
         <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>
       </p>
       <p className="login-link">
-        Already have an account? <a href="/login">Sign in</a>
+        Already have an account? <a href="https://quiet-nougat-c17eef.netlify.app/login">Sign in</a>
       </p>
       <div>
         <Copyright />
