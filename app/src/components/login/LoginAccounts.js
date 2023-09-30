@@ -7,7 +7,7 @@ import {
   setPassword,
   setEmail,
 } from "../store/actions/authActions"; // Import your actions
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../App.css";
 import Alert from "@mui/material/Alert";
 import Copyright from "../footer/Copyright";
@@ -121,7 +121,7 @@ function LoginAccounts() {
         <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>
       </p>
       <p className="login-link">
-        Don't have an account? <a href="https://quiet-nougat-c17eef.netlify.app/signup">Sign up</a>
+        Don't have an account? <Link to="/signup">Sign up</Link>
       </p>
       <div>
         <Copyright />

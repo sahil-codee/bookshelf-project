@@ -7,22 +7,28 @@ import {
   setReenterPassword,
   setRegistrationError,
 } from "../store/actions/authActions";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../App.css";
 import Copyright from "../footer/Copyright";
 import { BASE_URL } from "../services/helper";
-
 
 function RegisterAccounts({ onLogin }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const registrationEmail = useSelector((state) => state.auth.registrationEmail);
-  const registrationUsername = useSelector((state) => state.auth.registrationUsername);
-  const registrationPassword = useSelector((state) => state.auth.registrationPassword);
+  const registrationEmail = useSelector(
+    (state) => state.auth.registrationEmail
+  );
+  const registrationUsername = useSelector(
+    (state) => state.auth.registrationUsername
+  );
+  const registrationPassword = useSelector(
+    (state) => state.auth.registrationPassword
+  );
   const reenterPassword = useSelector((state) => state.auth.reenterPassword);
-  const registrationError = useSelector((state) => state.auth.registrationError);
-
+  const registrationError = useSelector(
+    (state) => state.auth.registrationError
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -156,7 +162,7 @@ function RegisterAccounts({ onLogin }) {
         <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>
       </p>
       <p className="login-link">
-        Already have an account? <a href="https://quiet-nougat-c17eef.netlify.app/login">Sign in</a>
+        Already have an account? <Link to="/login">Sign in</Link>
       </p>
       <div>
         <Copyright />
