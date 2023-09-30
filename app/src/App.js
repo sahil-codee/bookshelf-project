@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar/Navbar";
 import Dashboard from "./components/dashboard/Dashboard";
-import LoginAccounts from './components/login/LoginAccounts'
+import LoginAccounts from "./components/login/LoginAccounts";
 import RegisterAccounts from "./components/signup/RegisterAccounts";
-import MyBookshelf from "./components/MyBookshelf";
+// import HomePage from './components/home/HomePage'
+import MyBookshelf from "./components/bookstore/MyBookshelf";
 import { useDispatch, useSelector } from "react-redux";
 import { setUsername, logout } from "./components/store/actions/authActions"; // Import your Redux actions
 
@@ -36,10 +37,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={<LoginAccounts onLogin={handleLogin} />}
-        />
+        <Route path="/" element={<LoginAccounts onLogin={handleLogin} />} />
         <Route
           path="/dashboard"
           element={

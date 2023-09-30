@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import debounce from "lodash.debounce";
-import "../App.css";
-import bookshelf from "../Assets/Images/bookshelf.jpg";
+import './bookshelf.css'
+import bookshelf from "../../Assets/Images/bookshelf.jpg";
 
 function SearchBooks() {
   const [searchTerm, setSearchTerm] = useState("");

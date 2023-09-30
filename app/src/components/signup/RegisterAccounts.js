@@ -1,39 +1,45 @@
-import React, { useState } from "react";
-import "../../App.css";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setRegistrationEmail,
+  setRegistrationUsername,
+  setRegistrationPassword,
+  setReenterPassword,
+  setRegistrationError,
+} from "../store/actions/authActions";
 import { useNavigate } from "react-router-dom";
+import "../../App.css";
+import Copyright from "../footer/Copyright";
 
 function RegisterAccounts({ onLogin }) {
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [reenterPassword, setReenterPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [signupMessage, setSignupMessage] = useState("");
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+  const registrationEmail = useSelector((state) => state.auth.registrationEmail);
+  const registrationUsername = useSelector((state) => state.auth.registrationUsername);
+  const registrationPassword = useSelector((state) => state.auth.registrationPassword);
+  const reenterPassword = useSelector((state) => state.auth.reenterPassword);
+  const registrationError = useSelector((state) => state.auth.registrationError);
 
-    // Frontend validation
-    if (password !== reenterPassword) {
-      setPasswordError("Passwords do not match");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (registrationPassword !== reenterPassword) {
+      dispatch(setRegistrationError("Passwords do not match"));
       return;
-    } else if (password.length < 8) {
-      setPasswordError("Password must be at least 6 characters");
+    } else if (registrationPassword.length < 8) {
+      dispatch(setRegistrationError("Password must be at least 8 characters"));
       return;
     }
 
-    // Create an object with the form data
     const formData = {
-      email,
-      username,
-      password,
+      email: registrationEmail,
+      username: registrationUsername,
+      password: registrationPassword,
       reenterPassword,
     };
 
     try {
-      // Send the POST request using fetch
       const response = await fetch("http://localhost:3001/signup", {
         method: "POST",
         headers: {
@@ -45,34 +51,30 @@ function RegisterAccounts({ onLogin }) {
       if (response.ok) {
         const responseData = await response.json();
         if (responseData.message) {
-          setSignupMessage(responseData.message);
-
-          onLogin(username);
+          dispatch(setRegistrationError(""));
+          onLogin(registrationUsername);
 
           const token = responseData.token;
           if (token) {
             localStorage.setItem("token", token);
           }
-          // Redirect to the dashboard
           navigate("/dashboard");
         }
       } else if (response.status === 409) {
         const errorData = await response.json();
         if (errorData.message) {
-          setSignupMessage(errorData.message);
+          dispatch(setRegistrationError(errorData.message));
         }
         console.error("User already exists:", errorData.message);
       } else {
         const errorData = await response.json();
         if (errorData.error) {
-          setSignupMessage(errorData.error);
+          dispatch(setRegistrationError(errorData.error));
         }
         console.error("Registration failed:", response.statusText);
-        // Handle other error cases, show error message, etc.
       }
     } catch (error) {
       console.error("Error registering:", error);
-      // Handle network errors or other exceptions
     }
   };
 
@@ -91,32 +93,32 @@ function RegisterAccounts({ onLogin }) {
           <input
             type="text"
             id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={registrationUsername}
+            onChange={(e) => dispatch(setRegistrationUsername(e.target.value))}
             required
             placeholder="First and Last name"
-          />{" "}
+          />
         </div>
 
         <div className="input-group">
-          {signupMessage && (
+          {registrationError && (
             <p className="signup-message" style={{ color: "red" }}>
-              {signupMessage}
+              {registrationError}
             </p>
           )}
           <label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={registrationEmail}
+            onChange={(e) => dispatch(setRegistrationEmail(e.target.value))}
             required
           />
         </div>
 
         <div className="input-group">
-          {passwordError ? (
-            <p className="error-message">{passwordError}</p>
+          {registrationError ? (
+            <p className="error-message">{registrationError}</p>
           ) : (
             ""
           )}
@@ -124,12 +126,12 @@ function RegisterAccounts({ onLogin }) {
           <input
             type="password"
             id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={registrationPassword}
+            onChange={(e) => dispatch(setRegistrationPassword(e.target.value))}
             required
             minLength={8}
-            placeholder="At least 6 characters"
-          />{" "}
+            placeholder="At least 8 characters"
+          />
         </div>
 
         <div className="input-group">
@@ -138,10 +140,10 @@ function RegisterAccounts({ onLogin }) {
             type="password"
             id="reenterPassword"
             value={reenterPassword}
-            onChange={(e) => setReenterPassword(e.target.value)}
+            onChange={(e) => dispatch(setReenterPassword(e.target.value))}
             minLength={8}
             required
-          />{" "}
+          />
         </div>
 
         <button type="submit">Create Account</button>
@@ -153,6 +155,9 @@ function RegisterAccounts({ onLogin }) {
       <p className="login-link">
         Already have an account? <a href="/login">Sign in</a>
       </p>
+      <div>
+        <Copyright />
+      </div>
     </div>
   );
 }

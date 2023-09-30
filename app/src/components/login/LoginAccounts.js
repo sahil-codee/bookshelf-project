@@ -1,5 +1,5 @@
 // src/LoginAccounts.js
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   loginSuccess,
@@ -19,6 +19,14 @@ function LoginAccounts() {
   const email = useSelector((state) => state.auth.email); // Using Redux for email
   const password = useSelector((state) => state.auth.password);
   const loginMessage = useSelector((state) => state.auth.error);
+
+  useEffect(() => {
+    // Clear email and password when the component unmounts
+    return () => {
+      dispatch(setEmail(""));
+      dispatch(setPassword(""));
+    };
+  }, [dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

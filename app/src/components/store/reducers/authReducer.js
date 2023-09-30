@@ -4,6 +4,11 @@ const initialState = {
   password: "",
   email: "",
   error: null,
+  registrationEmail: "",
+  registrationUsername: "",
+  registrationPassword: "",
+  reenterPassword: "",
+  registrationError: "",
 };
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -37,6 +42,31 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state,
         error: action.payload,
+      };
+    case "SET_REGISTRATION_EMAIL":
+      return {
+        ...state,
+        registrationEmail: action.payload,
+      };
+    case "SET_REGISTRATION_USERNAME":
+      return {
+        ...state,
+        registrationUsername: action.payload,
+      };
+    case "SET_REGISTRATION_PASSWORD":
+      return {
+        ...state,
+        registrationPassword: action.payload,
+      };
+    case "SET_REENTER_PASSWORD":
+      return {
+        ...state,
+        reenterPassword: action.payload,
+      };
+    case "SET_REGISTRATION_ERROR":
+      return {
+        ...state,
+        registrationError: action.payload,
       };
     default:
       return state;

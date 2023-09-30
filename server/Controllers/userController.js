@@ -155,7 +155,6 @@ export const addToDashboard = async (req, res) => {
 };
 
 // Controller function to update a book's rating
-// Controller function to update a book's rating
 export const updateBookRating = async (req, res) => {
   const { book } = req.body;
 
@@ -229,6 +228,7 @@ export const updateBookProgress = async (req, res) => {
       {
         $set: {
           "books.$.pagesRead": book.pagesRead,
+          "books.$.progress": book.progress, // Update progress field
           "books.$.lastProgressUpdate": book.lastProgressUpdate,
         },
       },

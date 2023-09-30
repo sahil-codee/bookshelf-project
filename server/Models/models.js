@@ -12,11 +12,11 @@ const registrationSchema = new mongoose.Schema({
       author: String,
       genre: String,
       pagesRead: Number,
-      lastProgressUpdate: Date,
       pageCount: Number,
       averageRating: Number, // Added field for average rating
       ratingsCount: Number, // Added field for ratings count
       completed: Boolean,
+      progress: Number,
     },
   ],
 });

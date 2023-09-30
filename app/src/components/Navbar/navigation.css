@@ -1,0 +1,120 @@
+/* Style for the logo */
+.logo {
+  margin-bottom: 20px;
+}
+
+.logo h1 {
+  font-size: 36px;
+  color: #ffffff;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000000;
+  padding: 10px 20px;
+  color: white;
+}
+
+.navbar-logo h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.navbar-links ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links li {
+  margin-right: 20px;
+}
+
+.navbar-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.navbar-links button {
+  background-color: #ff5555;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Navbar.css */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+  color: white;
+}
+
+.navbar-logo h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+}
+
+/* Media query to show the hamburger button on screens up to 600px wide */
+/* Media query to show the hamburger button on screens up to 600px wide */
+@media (max-width: 800px) {
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .menu-toggle.active::before {
+    content: "✕"; /* Display the "X" button when the menu is open */
+  }
+
+  .navbar-links ul {
+    width: 50%;
+    text-align: center;
+    display: none;
+    flex-direction: column; /* Display the menu items as a column */
+    margin: 0; /* Reset margin */
+    padding: 0; /* Reset padding */
+    position: absolute;
+    top: 50px; /* Adjust the top position as needed */
+    right: 0px; /* Adjust the right position as needed */
+    background-color: #333; /* Add background color for the dropdown */
+    z-index: 1; /* Ensure it appears above other content */
+  }
+
+  .navbar-links.show-menu ul {
+    display: block;
+  }
+
+  .navbar-links.show-menu li {
+    margin: 10px 0; /* Add some spacing between menu items */
+  }
+}
+
+/* Hide the hamburger button on screens wider than 600px */
+/* Media query to hide the hamburger button on screens wider than 600px */
+@media (min-width: 800px) {
+  .menu-toggle {
+    display: none;
+  }
+
+  .navbar-links {
+    display: flex;
+  }
+}

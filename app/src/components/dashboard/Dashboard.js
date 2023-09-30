@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Rating from "react-rating-stars-component";
+import "./dashboard.css";
 
 function Dashboard() {
   const [addedBooks, setAddedBooks] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
 
   useEffect(() => {
     // Fetch user's dashboard data
     const token = localStorage.getItem("token");
-
+  
     if (token) {
       const fetchData = async () => {
         try {
@@ -17,17 +19,24 @@ function Dashboard() {
               Authorization: `Bearer ${token}`,
             },
           });
-
+  
           if (response.status === 401) {
             // Token has expired or is invalid, redirect to the login page
             window.location.href = "/login"; // Replace with the actual login page URL
             return; // Stop further processing
           }
-
+  
           if (response.ok) {
             const data = await response.json();
             console.log(data);
-            setAddedBooks(data.books || []);
+  
+            // Reset the pagesRead value to an empty string
+            const updatedBooks = data.books.map((book) => ({
+              ...book,
+              pagesRead: "",
+            }));
+  
+            setAddedBooks(updatedBooks);
           } else {
             console.error("Error fetching added books for dashboard");
           }
@@ -35,11 +44,11 @@ function Dashboard() {
           console.error("Error fetching added books for dashboard:", error);
         }
       };
-
+  
       fetchData(); // Call the function
     }
   }, []);
-
+  
   const handleRatingChange = async (book, rating) => {
     const token = localStorage.getItem("token");
     const updatedBook = {
@@ -108,15 +117,28 @@ function Dashboard() {
 
   const handleProgressUpdate = async (book, pagesRead) => {
     const token = localStorage.getItem("token");
+  
+    if (!pagesRead || parseInt(pagesRead) === 0) {
+      setErrorMessage("Please enter a valid value for pages read.");
+  
+      // Clear the error message after 5 seconds
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000);
+  
+      return;
+    }
+  
+    setErrorMessage("");
+  
     const updatedBook = {
       _id: book._id,
       pagesRead: pagesRead,
-      lastProgressUpdate: new Date(), // Update with the current date
+      lastProgressUpdate: new Date(),
     };
-
-    // Calculate progress as a decimal value
+  
     updatedBook.progress = pagesRead / book.pageCount;
-
+  
     try {
       const response = await fetch(
         "http://localhost:3001/dashboard/update-progress",
@@ -129,13 +151,12 @@ function Dashboard() {
           body: JSON.stringify({ book: updatedBook }),
         }
       );
-
+  
       if (response.ok) {
-        // Update the book's pagesRead, progress, and lastProgressUpdate in the state
         setAddedBooks((prevBooks) =>
           prevBooks.map((prevBook) =>
             prevBook._id === updatedBook._id
-              ? { ...prevBook, ...updatedBook }
+              ? { ...prevBook, ...updatedBook, pagesRead: "" } // Clear the pagesRead value
               : prevBook
           )
         );
@@ -146,7 +167,7 @@ function Dashboard() {
       console.error("Error updating book progress:", error);
     }
   };
-
+  
   const handlePagesReadChange = (book, pagesRead) => {
     // Update the pagesRead value in the book object in the state
     setAddedBooks((prevBooks) =>
@@ -163,6 +184,8 @@ function Dashboard() {
       <br />
       <h1>Currently Reading</h1>
       <br />
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}{" "}
+      {/* Display error message */}
       <table>
         <thead>
           <tr>
@@ -170,8 +193,9 @@ function Dashboard() {
             <th>Title</th>
             <th>Author</th>
             <th>Rating</th>
-            <th>Actions</th>
-            <th>Actions</th>
+            <th colSpan={2} style={{ textAlign: "center" }}>
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -192,18 +216,23 @@ function Dashboard() {
               </td>
               <td>
                 <button onClick={() => handleMarkAsFinished(book)}>
-                  Mark as Finished
+                  I'm Finished!
                 </button>
               </td>
               <td>
-                <input
-                  type="number"
-                  placeholder="Pages Read"
-                  value={book.pagesRead || ""}
-                  onChange={(e) => handlePagesReadChange(book, e.target.value)}
-                />
-                <p>out of</p>
-                <p>{book.pageCount}</p>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <input
+                    type="number"
+                    className="pages-read-input"
+                    placeholder="Pages Read"
+                    value={book.pagesRead || ""}
+                    onChange={(e) =>
+                      handlePagesReadChange(book, e.target.value)
+                    }
+                  />
+                  &nbsp;out of&nbsp;{book.pageCount}
+                </div>
+
                 <button
                   onClick={() => handleProgressUpdate(book, book.pagesRead)}
                 >
