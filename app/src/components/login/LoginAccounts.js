@@ -121,7 +121,7 @@ function LoginAccounts() {
         <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>
       </p>
       <p className="login-link">
-        Don't have an account? <a href="/signup">Sign up</a>
+        Don't have an account? <a href={`${BASE_URL}/signup`}>Sign up</a>
       </p>
       <div>
         <Copyright />
